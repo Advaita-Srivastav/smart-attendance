@@ -9,7 +9,7 @@ export default function MarkAttendance() {
   const navigate = useNavigate();
   const [status, setStatus] = useState('Getting your location...');
   const [done, setDone] = useState(false);
-  const device_id = navigator.userAgent + screen.width + screen.height;
+  const device_id = navigator.userAgent + window.screen.width + window.screen.height;
   const session_id = searchParams.get('session_id');
   const token = searchParams.get('token');
 

@@ -271,8 +271,7 @@ export default function TeacherDashboard() {
                   boxShadow: '0 2px 12px rgba(0,0,0,0.1)'
                 }}>
                   <QRCodeSVG
-                    value={`https://your-vercel-url.vercel.app/mark-attendance?session_id=${session.id}&token=${qrToken}`}
-                    size={180}
+value={`https://smart-attendance-pvppadrvk-alpha-adv.vercel.app/mark-attendance?session_id=${session.id}&token=${qrToken}`}                    size={180}
                   />
                 </div>
               )}

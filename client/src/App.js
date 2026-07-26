@@ -1,12 +1,14 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import StudentDashboard from './pages/StudentDashboard';
 import TeacherDashboard from './pages/TeacherDashboard';
 import MarkAttendance from './pages/MarkAttendance';
+
 const ProtectedRoute = ({ children, role }) => {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" />;
+  const location = useLocation();
+  if (!user) return <Navigate to={`/login?redirect=${location.pathname}${location.search}`} />;
   if (role && user.role !== role) return <Navigate to="/login" />;
   return children;
 };

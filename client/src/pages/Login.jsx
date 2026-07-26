@@ -12,19 +12,21 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      const res = await login({ email, password });
-      loginUser(res.data.user, res.data.token);
-      if (res.data.user.role === 'student') navigate('/student');
-      else navigate('/teacher');
-    } catch (err) {
-      setError('Invalid email or password');
-    }
-    setLoading(false);
-  };
+  e.preventDefault();
+  setLoading(true);
+  setError('');
+  try {
+    const res = await login({ email, password });
+    loginUser(res.data.user, res.data.token);
+    const redirect = new URLSearchParams(window.location.search).get('redirect');
+    if (redirect) navigate(redirect);
+    else if (res.data.user.role === 'student') navigate('/student');
+    else navigate('/teacher');
+  } catch (err) {
+    setError('Invalid email or password');
+  }
+  setLoading(false);
+};
 
   return (
     <div style={{

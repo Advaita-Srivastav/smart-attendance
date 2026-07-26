@@ -12,21 +12,21 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError('');
-  try {
-    const res = await login({ email, password });
-    loginUser(res.data.user, res.data.token);
-    const redirect = new URLSearchParams(window.location.search).get('redirect');
-    if (redirect) navigate(redirect);
-    else if (res.data.user.role === 'student') navigate('/student');
-    else navigate('/teacher');
-  } catch (err) {
-    setError('Invalid email or password');
-  }
-  setLoading(false);
-};
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const res = await login({ email, password });
+      loginUser(res.data.user, res.data.token);
+      const redirect = new URLSearchParams(window.location.search).get('redirect');
+      if (redirect) navigate(decodeURIComponent(redirect));
+      else if (res.data.user.role === 'student') navigate('/student');
+      else navigate('/teacher');
+    } catch (err) {
+      setError('Invalid email or password');
+    }
+    setLoading(false);
+  };
 
   return (
     <div style={{
@@ -46,7 +46,6 @@ export default function Login() {
         maxWidth: '400px',
         boxShadow: '0 20px 60px rgba(0,0,0,0.15)'
       }}>
-        {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <div style={{
             width: '64px',
@@ -80,9 +79,10 @@ export default function Login() {
 
         <form onSubmit={handleLogin}>
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', marginBottom: '6px', color: '#555', fontSize: '14px', fontWeight: '500' }}>
-              Email
-            </label>
+            <label style={{
+              display: 'block', marginBottom: '6px',
+              color: '#555', fontSize: '14px', fontWeight: '500'
+            }}>Email</label>
             <input
               type="email"
               value={email}
@@ -90,14 +90,10 @@ export default function Login() {
               placeholder="you@example.com"
               required
               style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: '10px',
-                border: '1.5px solid #eee',
-                fontSize: '14px',
-                outline: 'none',
-                boxSizing: 'border-box',
-                transition: 'border-color 0.2s'
+                width: '100%', padding: '12px 14px',
+                borderRadius: '10px', border: '1.5px solid #eee',
+                fontSize: '14px', outline: 'none',
+                boxSizing: 'border-box'
               }}
               onFocus={(e) => e.target.style.borderColor = '#667eea'}
               onBlur={(e) => e.target.style.borderColor = '#eee'}
@@ -105,9 +101,10 @@ export default function Login() {
           </div>
 
           <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', marginBottom: '6px', color: '#555', fontSize: '14px', fontWeight: '500' }}>
-              Password
-            </label>
+            <label style={{
+              display: 'block', marginBottom: '6px',
+              color: '#555', fontSize: '14px', fontWeight: '500'
+            }}>Password</label>
             <input
               type="password"
               value={password}
@@ -115,12 +112,9 @@ export default function Login() {
               placeholder="••••••••"
               required
               style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: '10px',
-                border: '1.5px solid #eee',
-                fontSize: '14px',
-                outline: 'none',
+                width: '100%', padding: '12px 14px',
+                borderRadius: '10px', border: '1.5px solid #eee',
+                fontSize: '14px', outline: 'none',
                 boxSizing: 'border-box'
               }}
               onFocus={(e) => e.target.style.borderColor = '#667eea'}
@@ -132,16 +126,12 @@ export default function Login() {
             type="submit"
             disabled={loading}
             style={{
-              width: '100%',
-              padding: '14px',
+              width: '100%', padding: '14px',
               background: loading ? '#ccc' : 'linear-gradient(135deg, #667eea, #f093fb)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '10px',
-              fontSize: '16px',
+              color: 'white', border: 'none',
+              borderRadius: '10px', fontSize: '16px',
               fontWeight: 'bold',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'opacity 0.2s'
+              cursor: loading ? 'not-allowed' : 'pointer'
             }}
           >
             {loading ? 'Signing in...' : 'Sign In'}

@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
 
-const socket = io('http://10.137.139.213:5000');
+const socket = io('https://smart-attendance-6xzx.onrender.com');
 const colors = {
   purple: '#667eea',
   pink: '#f093fb',

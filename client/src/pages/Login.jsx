@@ -20,8 +20,10 @@ export default function Login() {
       loginUser(res.data.user, res.data.token);
       const redirect = new URLSearchParams(window.location.search).get('redirect');
       if (redirect) navigate(decodeURIComponent(redirect));
-      else if (res.data.user.role === 'student') navigate('/student');
-      else navigate('/teacher');
+      else if (res.data.user.role === 'student') {
+        if (!res.data.user.roll_number) navigate('/onboarding');
+        else navigate('/student');
+      } else navigate('/teacher');
     } catch (err) {
       setError('Invalid email or password');
     }

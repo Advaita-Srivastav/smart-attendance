@@ -5,6 +5,7 @@ import StudentDashboard from './pages/StudentDashboard';
 import TeacherDashboard from './pages/TeacherDashboard';
 import SetClassroomLocation from './pages/SetClassroomLocation';
 import MarkAttendance from './pages/MarkAttendance';
+import Onboarding from './pages/Onboarding';
 
 const ProtectedRoute = ({ children, role }) => {
   const { user } = useAuth();
@@ -19,6 +20,7 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/onboarding" element={<ProtectedRoute role="student"><Onboarding /></ProtectedRoute>} />
           <Route path="/set-classroom" element={<SetClassroomLocation />} />
           <Route path="/mark-attendance" element={<MarkAttendance />} />
           <Route path="/login" element={<Login />} />

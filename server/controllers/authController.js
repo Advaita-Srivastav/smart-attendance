@@ -36,5 +36,17 @@ const login = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+const updateProfile = async (req, res) => {
+  const { roll_number } = req.body;
+  try {
+    await pool.query(
+      'UPDATE users SET roll_number = $1 WHERE id = $2',
+      [roll_number, req.user.id]
+    );
+    res.json({ message: 'Profile updated' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
-module.exports = { register, login };
+module.exports = { register, login, updateProfile };

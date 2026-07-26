@@ -36,7 +36,7 @@ export default function MarkAttendance() {
       },
       () => setStatus('Location access denied — enable location and try again')
     );
-  }, []);
+  }, [user, navigate, session_id, token, device_id]);
 
   return (
     <div style={{

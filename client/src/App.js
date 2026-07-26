@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import StudentDashboard from './pages/StudentDashboard';
 import TeacherDashboard from './pages/TeacherDashboard';
+import SetClassroomLocation from './pages/SetClassroomLocation';
 import MarkAttendance from './pages/MarkAttendance';
 
 const ProtectedRoute = ({ children, role }) => {
@@ -18,6 +19,7 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/set-classroom" element={<SetClassroomLocation />} />
           <Route path="/mark-attendance" element={<MarkAttendance />} />
           <Route path="/login" element={<Login />} />
           <Route path="/student" element={

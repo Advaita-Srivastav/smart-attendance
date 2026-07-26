@@ -30,7 +30,7 @@ export default function TeacherDashboard() {
   const [attendees, setAttendees] = useState([]);
   const [newSubject, setNewSubject] = useState('');
   const [message, setMessage] = useState('');
-  const [settingLocation, setSettingLocation] = useState(false);
+  const [classroomQR, setClassroomQR] = useState(false);
 
   const fetchSubjects = useCallback(async () => {
     try {
@@ -78,29 +78,6 @@ export default function TeacherDashboard() {
     } catch (err) { setMessage('Failed to delete subject'); }
   };
 
-  const setClassroomLocation = () => {
-    if (!selectedSubject) return setMessage('Select a subject first');
-    setSettingLocation(true);
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      try {
-        await API.post('/attendance/classroom/set-location', {
-          subject_id: selectedSubject,
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-          radius_meters: 50
-        });
-        setMessage('Classroom location set successfully!');
-        setSettingLocation(false);
-      } catch (err) {
-        setMessage('Failed to set location');
-        setSettingLocation(false);
-      }
-    }, () => {
-      setMessage('Location access denied');
-      setSettingLocation(false);
-    });
-  };
-
   const startSession = async () => {
     if (!selectedSubject) return setMessage('Select a subject first');
     try {
@@ -108,6 +85,7 @@ export default function TeacherDashboard() {
       setSession(res.data.session);
       setQrToken(res.data.qr.token);
       fetchAttendees(res.data.session.id);
+      setClassroomQR(false);
       setMessage('');
     } catch (err) { setMessage('Failed to start session'); }
   };
@@ -158,7 +136,7 @@ export default function TeacherDashboard() {
           }}>{message}</div>
         )}
 
-        {/* Create Subject */}
+        {/* Subjects */}
         <div style={card}>
           <h3 style={{ margin: '0 0 16px', color: colors.dark }}>📚 Subjects</h3>
           <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
@@ -180,7 +158,6 @@ export default function TeacherDashboard() {
             }}>Add</button>
           </div>
 
-          {/* Subject List with Delete */}
           {subjects.map(s => (
             <div key={s.id} style={{
               display: 'flex',
@@ -195,13 +172,9 @@ export default function TeacherDashboard() {
               <span style={{ fontWeight: '500', color: colors.dark }}>{s.name}</span>
               <button onClick={() => deleteSubject(s.id)} style={{
                 background: colors.red,
-                color: 'white',
-                border: 'none',
-                padding: '4px 12px',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '12px',
-                fontWeight: 'bold'
+                color: 'white', border: 'none',
+                padding: '4px 12px', borderRadius: '6px',
+                cursor: 'pointer', fontSize: '12px', fontWeight: 'bold'
               }}>Delete</button>
             </div>
           ))}
@@ -212,7 +185,10 @@ export default function TeacherDashboard() {
           <h3 style={{ margin: '0 0 16px', color: colors.dark }}>🎯 Session Control</h3>
           <select
             value={selectedSubject}
-            onChange={(e) => setSelectedSubject(e.target.value)}
+            onChange={(e) => {
+              setSelectedSubject(e.target.value);
+              setClassroomQR(false);
+            }}
             style={{
               width: '100%', padding: '10px 14px',
               borderRadius: '8px', border: '1px solid #ddd',
@@ -225,14 +201,19 @@ export default function TeacherDashboard() {
             ))}
           </select>
 
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button onClick={setClassroomLocation} disabled={settingLocation} style={{
-              background: `linear-gradient(135deg, ${colors.orange}, #f5a623cc)`,
-              color: 'white', border: 'none',
-              padding: '10px 20px', borderRadius: '8px',
-              cursor: 'pointer', fontWeight: 'bold'
-            }}>
-              {settingLocation ? 'Getting Location...' : '📍 Set My Location as Classroom'}
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '12px' }}>
+            <button
+              onClick={() => {
+                if (!selectedSubject) return setMessage('Select a subject first');
+                setClassroomQR(!classroomQR);
+              }}
+              style={{
+                background: `linear-gradient(135deg, ${colors.orange}, #f5a623cc)`,
+                color: 'white', border: 'none',
+                padding: '10px 20px', borderRadius: '8px',
+                cursor: 'pointer', fontWeight: 'bold'
+              }}>
+              📍 Set Classroom Location
             </button>
 
             {!session ? (
@@ -251,12 +232,34 @@ export default function TeacherDashboard() {
               }}>⏹ End Session</button>
             )}
           </div>
+
+          {/* Classroom QR */}
+          {classroomQR && selectedSubject && (
+            <div style={{
+              marginTop: '16px',
+              padding: '16px',
+              background: '#fff8e1',
+              borderRadius: '12px',
+              border: '1px solid #ffe082',
+              textAlign: 'center'
+            }}>
+              <p style={{ margin: '0 0 12px', fontWeight: '500', color: colors.dark }}>
+                📱 Scan this QR with your phone while standing inside the classroom
+              </p>
+              <p style={{ margin: '0 0 16px', fontSize: '13px', color: '#666' }}>
+                Phone GPS will set the exact classroom coordinates
+              </p>
+              <QRCodeSVG
+                value={`https://smart-attendance-pvppadrvk-alpha-adv.vercel.app/set-classroom?subject_id=${selectedSubject}`}
+                size={150}
+              />
+            </div>
+          )}
         </div>
 
         {/* Active Session */}
         {session && (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-            {/* QR Code */}
             <div style={{ ...card, textAlign: 'center' }}>
               <h3 style={{ margin: '0 0 8px', color: colors.dark }}>📲 Scan to Mark</h3>
               <p style={{ margin: '0 0 16px', color: '#666', fontSize: '13px' }}>
@@ -271,13 +274,13 @@ export default function TeacherDashboard() {
                   boxShadow: '0 2px 12px rgba(0,0,0,0.1)'
                 }}>
                   <QRCodeSVG
-value={`https://smart-attendance-pvppadrvk-alpha-adv.vercel.app/mark-attendance?session_id=${session.id}&token=${qrToken}`}                    size={180}
+                    value={`https://smart-attendance-pvppadrvk-alpha-adv.vercel.app/mark-attendance?session_id=${session.id}&token=${qrToken}`}
+                    size={180}
                   />
                 </div>
               )}
             </div>
 
-            {/* Attendees */}
             <div style={card}>
               <h3 style={{ margin: '0 0 16px', color: colors.dark }}>
                 ✅ Present ({attendees.length})
